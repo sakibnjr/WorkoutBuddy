@@ -1,8 +1,15 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaDumbbell } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
+  const handleStartJourney = () => {
+    navigate("/workouts");
+  };
+
   return (
     <motion.section
       className="flex flex-col items-center justify-center h-screen bg-cover bg-center px-4"
@@ -44,6 +51,7 @@ const HeroSection = () => {
         className="mt-8 px-8 py-3 bg-red-600 text-white font-semibold rounded-lg shadow-lg hover:bg-red-700"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
+        onClick={handleStartJourney}
       >
         Start Your Journey
       </motion.button>

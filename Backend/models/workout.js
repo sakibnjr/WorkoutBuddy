@@ -8,6 +8,7 @@ const workoutSchema = new mongoose.Schema(
     category: { type: String, required: true },
     difficulty: { type: String, required: true },
     user_id: { type: String, required: true },
+    completed: { type: Boolean, default: false }
   },
   { timestamps: true }
 );

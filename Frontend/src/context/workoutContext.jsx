@@ -9,11 +9,11 @@ const WorkoutContextProvider = ({ children }) => {
         return { workouts: action.payload };
       case "CREATE_WORKOUT":
         return { workouts: [action.payload, ...state.workouts] };
-      case "DELETE_WORKOUT":
+      case "UPDATE_WORKOUT":
         return {
           ...state,
-          workouts: state.workouts.filter(
-            (workout) => workout._id !== action.payload._id
+          workouts: state.workouts.map((workout) =>
+            workout._id === action.payload._id ? action.payload : workout
           ),
         };
       default:

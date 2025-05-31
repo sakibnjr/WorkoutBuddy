@@ -2,10 +2,11 @@ import React from "react";
 
 import { motion } from "framer-motion";
 
-import { FaDumbbell, FaHeart, FaTrashAlt } from "react-icons/fa";
+import { FaCheckCircle, FaDumbbell, FaFire, FaCalendarAlt } from "react-icons/fa";
 
 import { useWorkoutContext } from "../hooks/workoutContext";
 import { useAuthContext } from "../hooks/useAuthContext";
+
 const WorkoutDetails = ({ workout }) => {
   // Function to format the date
   const timeAgo = (dateString) => {
@@ -32,69 +33,81 @@ const WorkoutDetails = ({ workout }) => {
   const { dispatch } = useWorkoutContext();
   const { user } = useAuthContext();
 
-  const handleDelete = async () => {
+  const handleClick = async () => {
     if (!user) {
       return;
     }
-    const response = await fetch(
-      "http://localhost:4000/api/workouts/" + workout._id,
-      {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${user.token}` },
-      }
-    );
-    const data = await response.json();
 
-    if (response.ok) {
-      dispatch({ type: "DELETE_WORKOUT", payload: data });
+    try {
+      const response = await fetch(
+        "http://localhost:4000/api/workouts/" + workout._id,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`
+          },
+          body: JSON.stringify({ completed: !workout.completed })
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to update workout');
+      }
+
+      const updatedWorkout = await response.json();
+      dispatch({ type: "UPDATE_WORKOUT", payload: updatedWorkout });
+    } catch (error) {
+      console.error('Error updating workout:', error);
     }
   };
 
   return (
     <motion.div
-      key={workout._id}
-      className="bg-white rounded-lg shadow-lg p-6 relative transform transition hover:scale-105"
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: workout._id * 0.1, duration: 0.5 }}
+      className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow relative"
+      whileHover={{ y: -5 }}
+      transition={{ duration: 0.2 }}
     >
-      <div className="flex  items-center mb-4">
-        <FaDumbbell className="text-blue-500 text-3xl mr-2" />
-        <h2 className="text-2xl font-bold text-gray-800">{workout.title}</h2>
-      </div>
-      <p className="absolute right-4 top-2 bg-slate-800 text-white rounded-md px-2">
-        {timeAgo(workout.createdAt)}
-      </p>
-      <p className="text-gray-600 mb-2">
-        <span className="font-semibold">Category:</span> {workout.category}
-      </p>
-      <p className="text-gray-600 mb-2">
-        <span className="font-semibold">Difficulty:</span> {workout.difficulty}
-      </p>
-      <p className="text-gray-600 mb-2">
-        <span className="font-semibold">Reps:</span> {workout.reps}
-      </p>
-      <p className="text-gray-600 mb-4">
-        <span className="font-semibold">Load:</span> {workout.load}
-      </p>
+      {workout.completed && (
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-10">
+          <div className="text-green-500 text-2xl font-bold flex items-center gap-2">
+            <FaCheckCircle className="text-3xl" />
+            Completed
+          </div>
+        </div>
+      )}
+      <div className={`p-6 ${workout.completed ? 'opacity-40' : ''}`}>
+        {/* Header with Title and Time */}
+        <div className="flex items-start justify-between mb-4">
+          <h4 className="text-xl font-semibold text-gray-800 line-clamp-2">
+            {workout.title}
+          </h4>
+          <div className="flex items-center gap-1 text-gray-500 text-sm">
+            <FaCalendarAlt className="text-rose-500" />
+            <span>{timeAgo(workout.createdAt)}</span>
+          </div>
+        </div>
 
-      {/* Action Buttons */}
-      <div className="flex justify-between">
-        <motion.button
-          className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 flex items-center"
-          whileHover={{ scale: 1.05 }}
+        {/* Workout Details */}
+        <div className="space-y-3 mb-6">
+          <div className="flex items-center gap-2 text-gray-600">
+            <FaDumbbell className="text-rose-500" />
+            <span className="text-sm">{workout.load} kg</span>
+          </div>
+          <div className="flex items-center gap-2 text-gray-600">
+            <FaFire className="text-rose-500" />
+            <span className="text-sm">{workout.reps} reps</span>
+          </div>
+        </div>
+
+        {/* Action Button */}
+        <button
+          onClick={handleClick}
+          className="w-full py-2.5 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white"
         >
-          <FaHeart className="mr-2" />
-          Add to Favorites
-        </motion.button>
-        <motion.button
-          className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 flex items-center"
-          whileHover={{ scale: 1.05 }}
-          onClick={handleDelete}
-        >
-          <FaTrashAlt className="mr-2" />
-          Delete
-        </motion.button>
+          <FaCheckCircle />
+          {workout.completed ? "Mark as Pending" : "Mark as Complete"}
+        </button>
       </div>
     </motion.div>
   );

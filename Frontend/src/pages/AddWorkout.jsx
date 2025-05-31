@@ -1,17 +1,14 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import toast, { Toaster } from "react-hot-toast";
-
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-
+import { FaDumbbell, FaFire, FaWeightHanging, FaChartLine, FaLayerGroup } from "react-icons/fa";
 import { useWorkoutContext } from "../hooks/workoutContext";
 import { useAuthContext } from "../hooks/useAuthContext";
 
 const AddWorkoutForm = () => {
   const { dispatch } = useWorkoutContext();
-
   const navigate = useNavigate();
-  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     title: "",
     reps: "",
@@ -31,12 +28,9 @@ const AddWorkoutForm = () => {
     e.preventDefault();
 
     if (!user) {
-      toast.error("Login to add workout");
+      toast.error("Please login to add a workout");
       return;
     }
-
-    // Destructure formData here
-    const { title, reps, load, difficulty, category } = formData;
 
     try {
       const response = await fetch("http://localhost:4000/api/workouts/", {
@@ -50,10 +44,8 @@ const AddWorkoutForm = () => {
 
       const data = await response.json();
       if (!response.ok) {
-        setError(data.message || "An error occurred while adding the workout.");
         toast.error(data.message || "Failed to add workout!");
       } else {
-        // Clear form data if the post request is successful
         setFormData({
           title: "",
           reps: "",
@@ -61,38 +53,37 @@ const AddWorkoutForm = () => {
           difficulty: "Beginner",
           category: "Strength",
         });
-        setError(""); // Clear any previous errors
         toast.success("Workout added successfully!");
-        // Navigate to the homepage after a short delay
-        // setTimeout(() => {
-        //   navigate("/workouts");
-        // }, 1500); // Adjust delay as needed
+        setTimeout(() => {
+          navigate("/workouts");
+        }, 1500);
         dispatch({ type: "CREATE_WORKOUT", payload: data });
       }
     } catch (error) {
-      setError("Failed to connect to the server.");
       toast.error("Network error! Please try again later.");
     }
   };
 
   return (
-    <div className="mx-auto flex items-center justify-center bg-gray-100 py-10 px-4 md:px-8 lg:px-16">
-      <Toaster />
-      <motion.div
-        className="bg-white p-6 md:p-8 lg:p-10 rounded-lg shadow-lg w-full"
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          Add New Workout
-        </h2>
-        <form onSubmit={handleSubmit}>
-          {/* Workout Title, Reps, Load - Flex layout on large screens */}
-          <div className="space-y-4 lg:space-y-0 lg:flex lg:space-x-4 mb-4">
-            {/* Workout Title */}
-            <div className="flex-1">
-              <label className="block text-gray-700 font-semibold mb-2">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">
+      <div className="container mx-auto w-4/5">
+        <motion.div
+          className="bg-white rounded-xl shadow-lg overflow-hidden"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Form Header */}
+          <div className="bg-gray-800 px-6 py-8 text-center">
+            <h2 className="text-3xl font-bold text-white mb-2">Add New Workout</h2>
+            <p className="text-rose-100">Track your fitness journey with a new workout</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="p-6 md:p-8">
+            {/* Title Input */}
+            <div className="mb-6">
+              <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                <FaDumbbell className="text-rose-500" />
                 Workout Title
               </label>
               <input
@@ -101,92 +92,102 @@ const AddWorkoutForm = () => {
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="Enter workout title"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-colors"
                 required
               />
             </div>
-            {/* Reps */}
-            <div className="flex-1">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Reps
-              </label>
-              <input
-                type="number"
-                name="reps"
-                value={formData.reps}
-                onChange={handleChange}
-                placeholder="Enter number of reps"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                required
-              />
-            </div>
-            {/* Load */}
-            <div className="flex-1">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Load
-              </label>
-              <input
-                type="text"
-                name="load"
-                value={formData.load}
-                onChange={handleChange}
-                placeholder="Enter load (e.g., 10 kg, Bodyweight)"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-                required
-              />
-            </div>
-          </div>
 
-          {/* Difficulty Level and Category - Flex layout on large screens */}
-          <div className="space-y-4 lg:space-y-0 lg:flex lg:space-x-4 mb-6">
-            {/* Difficulty Level */}
-            <div className="flex-1">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Difficulty Level
-              </label>
-              <select
-                name="difficulty"
-                value={formData.difficulty}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              >
-                <option value="Beginner">Beginner</option>
-                <option value="Intermediate">Intermediate</option>
-                <option value="Advanced">Advanced</option>
-              </select>
+            {/* Reps and Load Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              {/* Reps Input */}
+              <div>
+                <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                  <FaFire className="text-yellow-500" />
+                  Repetitions
+                </label>
+                <input
+                  type="number"
+                  name="reps"
+                  value={formData.reps}
+                  onChange={handleChange}
+                  placeholder="Number of reps"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-colors"
+                  required
+                />
+              </div>
+
+              {/* Load Input */}
+              <div>
+                <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                  <FaWeightHanging className="text-green-500" />
+                  Load
+                </label>
+                <input
+                  type="text"
+                  name="load"
+                  value={formData.load}
+                  onChange={handleChange}
+                  placeholder="Weight or resistance"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-colors"
+                  required
+                />
+              </div>
             </div>
 
-            {/* Category */}
-            <div className="flex-1">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Category
-              </label>
-              <select
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              >
-                <option value="Strength">Strength</option>
-                <option value="Cardio">Cardio</option>
-                <option value="Flexibility">Flexibility</option>
-                <option value="Endurance">Endurance</option>
-                <option value="Balance">Balance</option>
-              </select>
-            </div>
-          </div>
+            {/* Difficulty and Category Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              {/* Difficulty Select */}
+              <div>
+                <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                  <FaChartLine className="text-rose-500" />
+                  Difficulty Level
+                </label>
+                <select
+                  name="difficulty"
+                  value={formData.difficulty}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-colors"
+                >
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
+              </div>
 
-          {/* Submit Button */}
-          <motion.button
-            type="submit"
-            className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none"
-            whileHover={{ scale: 1.05 }}
-          >
-            Add Workout
-          </motion.button>
-          <p>{error}</p>
-        </form>
-      </motion.div>
+              {/* Category Select */}
+              <div>
+                <label className="block text-gray-700 font-medium mb-2 flex items-center gap-2">
+                  <FaLayerGroup className="text-rose-500" />
+                  Category
+                </label>
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-colors"
+                >
+                  <option value="Strength">Strength</option>
+                  <option value="Cardio">Cardio</option>
+                  <option value="Flexibility">Flexibility</option>
+                  <option value="Endurance">Endurance</option>
+                  <option value="Balance">Balance</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <motion.button
+              type="submit"
+              className="w-full bg-gradient-to-r from-rose-500 to-rose-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:from-rose-600 hover:to-rose-700 transition-all flex items-center justify-center gap-2"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <FaDumbbell />
+              Add Workout
+            </motion.button>
+          </form>
+        </motion.div>
+      </div>
     </div>
   );
 };

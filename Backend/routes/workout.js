@@ -3,7 +3,6 @@ import {
   getAllWorkouts,
   getSingleWorkout,
   addWorkout,
-  deleteWorkout,
   updateWorkout,
 } from "../controllers/workoutController.js";
 
@@ -21,9 +20,6 @@ router.get("/:id", getSingleWorkout);
 
 //Add a new workout
 router.post("/", addWorkout);
-
-//Delete a workout
-router.delete("/:id", deleteWorkout);
 
 //Update a workout
 router.patch("/:id", updateWorkout);

@@ -42,42 +42,33 @@ const addWorkout = async (req, res) => {
   }
 };
 
-//delete workout
-const deleteWorkout = async (req, res) => {
-  const { id } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(404).json({ error: "No such workout" });
-  }
-
-  const workout = await workoutModel.findByIdAndDelete({ _id: id });
-
-  if (!workout) {
-    return res.status(404).json({ error: "No such workout" });
-  }
-  res.status(200).json({ msg: "Deleteted Successfully" });
-};
-
 //update workout
 const updateWorkout = async (req, res) => {
   const { id } = req.params;
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).json({ error: "No such workout" });
   }
-  const workout = await workoutModel.findOneAndUpdate(
-    { _id: id },
-    { ...req.body }
-  );
 
-  if (!workout) {
-    return res.status(404).json({ error: "No such workout" });
+  try {
+    const workout = await workoutModel.findOneAndUpdate(
+      { _id: id },
+      { ...req.body },
+      { new: true, runValidators: true }
+    );
+
+    if (!workout) {
+      return res.status(404).json({ error: "No such workout" });
+    }
+
+    res.status(200).json(workout);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
-  res.status(200).json({ msg: "Updated Successfully" });
 };
 
 export {
   getAllWorkouts,
   getSingleWorkout,
   addWorkout,
-  deleteWorkout,
   updateWorkout,
 };
