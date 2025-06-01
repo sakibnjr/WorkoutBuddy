@@ -23,7 +23,7 @@ function App() {
       <Toaster position="top-center" />
       <Navbar />
       <Routes>
-        <Route path="/" element={user ? <Home /> : <Navigate to="/login" />} />
+        <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route
           path="/workouts"
@@ -33,7 +33,6 @@ function App() {
           path="/add-workout"
           element={user ? <AddWorkout /> : <Navigate to="/login" />}
         />
-
         <Route
           path="/login"
           element={!user ? <Login /> : <Navigate to="/" />}
