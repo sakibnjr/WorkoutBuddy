@@ -74,8 +74,8 @@ const AddWorkoutForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">
-      <div className="container mx-auto w-4/5">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-2 md:py-8">
+      <div className="px-2">
         <motion.div
           className="bg-white rounded-xl shadow-lg overflow-hidden"
           initial={{ opacity: 0, y: 20 }}
