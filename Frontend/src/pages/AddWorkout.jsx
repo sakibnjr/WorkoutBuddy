@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { FaDumbbell, FaFire, FaWeightHanging, FaChartLine, FaLayerGroup } from "react-icons/fa";
+import {
+  FaDumbbell,
+  FaFire,
+  FaWeightHanging,
+  FaChartLine,
+  FaLayerGroup,
+} from "react-icons/fa";
 import { useWorkoutContext } from "../hooks/workoutContext";
 import { useAuthContext } from "../hooks/useAuthContext";
 
@@ -33,14 +39,17 @@ const AddWorkoutForm = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:4000/api/workouts/", {
-        method: "POST",
-        body: JSON.stringify(formData),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
+      const response = await fetch(
+        "https://workoutbuddy-fzqj.onrender.com/api/workouts/",
+        {
+          method: "POST",
+          body: JSON.stringify(formData),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
 
       const data = await response.json();
       if (!response.ok) {
@@ -75,8 +84,12 @@ const AddWorkoutForm = () => {
         >
           {/* Form Header */}
           <div className="bg-gray-800 px-6 py-8 text-center">
-            <h2 className="text-3xl font-bold text-white mb-2">Add New Workout</h2>
-            <p className="text-rose-100">Track your fitness journey with a new workout</p>
+            <h2 className="text-3xl font-bold text-white mb-2">
+              Add New Workout
+            </h2>
+            <p className="text-rose-100">
+              Track your fitness journey with a new workout
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 md:p-8">

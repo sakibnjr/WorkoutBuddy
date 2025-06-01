@@ -13,13 +13,16 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
-      const response = await fetch("http://localhost:4000/api/user/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        "https://workoutbuddy-fzqj.onrender.com/api/user/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       const data = await response.json();
 
@@ -28,7 +31,7 @@ const LoginPage = () => {
         setPassword("");
         localStorage.setItem("user", JSON.stringify(data));
         dispatch({ type: "LOGIN", payload: data });
-        
+
         toast.success("Login successful! Redirecting...");
         setTimeout(() => {
           navigate("/workouts");
@@ -48,7 +51,7 @@ const LoginPage = () => {
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 text-center mb-4 sm:mb-6">
             Welcome Back
           </h2>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Email Field */}
             <div>

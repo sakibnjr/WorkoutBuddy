@@ -2,7 +2,13 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { FaPlusCircle, FaCheckCircle, FaClock, FaChartLine, FaTrophy } from "react-icons/fa";
+import {
+  FaPlusCircle,
+  FaCheckCircle,
+  FaClock,
+  FaChartLine,
+  FaTrophy,
+} from "react-icons/fa";
 
 import { useWorkoutContext } from "../hooks/workoutContext.jsx";
 import WorkoutDetails from "../components/WorkoutDetails.jsx";
@@ -19,20 +25,23 @@ const WorkoutPage = () => {
     }
     const fetchWorkouts = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/workouts", {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        });
+        const response = await fetch(
+          "https://workoutbuddy-fzqj.onrender.com/api/workouts",
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
         const data = await response.json();
         if (response.ok) {
           dispatch({ type: "SET_WORKOUTS", payload: data });
         }
       } catch (error) {
-        console.error('Error fetching workouts:', error);
+        console.error("Error fetching workouts:", error);
       }
     };
-    
+
     fetchWorkouts();
   }, [dispatch, user]);
 
@@ -47,12 +56,16 @@ const WorkoutPage = () => {
     }
   });
 
-  const completedWorkouts = workouts?.filter((workout) => workout.completed === true);
-  const pendingWorkouts = workouts?.filter((workout) => workout.completed === false);
+  const completedWorkouts = workouts?.filter(
+    (workout) => workout.completed === true
+  );
+  const pendingWorkouts = workouts?.filter(
+    (workout) => workout.completed === false
+  );
 
   // Calculate completion rate
-  const completionRate = workouts?.length 
-    ? Math.round((completedWorkouts?.length / workouts.length) * 100) 
+  const completionRate = workouts?.length
+    ? Math.round((completedWorkouts?.length / workouts.length) * 100)
     : 0;
 
   const containerVariants = {
@@ -60,17 +73,17 @@ const WorkoutPage = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
-      opacity: 1
-    }
+      opacity: 1,
+    },
   };
 
   return (
@@ -92,7 +105,7 @@ const WorkoutPage = () => {
         </motion.div>
 
         {/* Combined Progress and Stats Section */}
-        <motion.div 
+        <motion.div
           className="bg-white rounded-xl shadow-lg p-6 mb-8"
           variants={itemVariants}
           initial="hidden"
@@ -102,7 +115,9 @@ const WorkoutPage = () => {
             {/* Progress Section */}
             <div className="md:col-span-2">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-lg font-semibold text-gray-800">Overall Progress</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Overall Progress
+                </h3>
                 <div className="flex items-center gap-2">
                   <FaTrophy className="text-yellow-500" />
                   <span className="font-semibold">{completionRate}%</span>
@@ -127,7 +142,9 @@ const WorkoutPage = () => {
               <div className="bg-green-50 p-4 rounded-lg">
                 <div className="flex items-center gap-2 mb-1">
                   <FaCheckCircle className="text-green-500" />
-                  <span className="text-sm font-medium text-gray-700">Completed</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Completed
+                  </span>
                 </div>
                 <p className="text-2xl font-bold text-green-600">
                   {completedWorkouts?.length || 0}
@@ -136,7 +153,9 @@ const WorkoutPage = () => {
               <div className="bg-yellow-50 p-4 rounded-lg">
                 <div className="flex items-center gap-2 mb-1">
                   <FaClock className="text-yellow-500" />
-                  <span className="text-sm font-medium text-gray-700">Pending</span>
+                  <span className="text-sm font-medium text-gray-700">
+                    Pending
+                  </span>
                 </div>
                 <p className="text-2xl font-bold text-yellow-600">
                   {pendingWorkouts?.length || 0}
@@ -215,11 +234,7 @@ const WorkoutPage = () => {
           >
             {filteredWorkouts &&
               filteredWorkouts.map((workout) => (
-                <motion.div
-                  key={workout._id}
-                  variants={itemVariants}
-                  layout
-                >
+                <motion.div key={workout._id} variants={itemVariants} layout>
                   <WorkoutDetails workout={workout} />
                 </motion.div>
               ))}
